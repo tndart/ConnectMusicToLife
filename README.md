@@ -2,4 +2,4 @@
 Music app
 
 
- [link](https://github.com/tndart/ConnectMusicToLife/projects)
+ [Your can see all the tasks at 'Projects' tab](https://github.com/tndart/ConnectMusicToLife/projects)
