@@ -1,0 +1,13 @@
+{
+    "name": "docker-music-data-api",
+    "version": "1.0.0",
+    "description": "Public API to pull data on music tracks, albums and artists",
+    "author": "LironElbaz92@gmail.com",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.16.2"
+    }
+}
