@@ -1,7 +1,11 @@
 'use strict';
 const express = require('express');
-const Tracks = require('./src/tracks');
-const lastfmapi = require('./src/last-fm-api');
+const ArtistSrvice = require('./services/artist');
+const mongo = require('./adapters/db');
+
+const trackRouter = require('./routes/track');
+const artistRouter = require('./routes/artist');
+const tagRouter = require('./routes/tag');
 
 // Constants
 const PORT = 8080;
@@ -22,7 +26,7 @@ const service_list = {
     ]
 };
 
-// Functions
+// Functions .Depracted.
 const sendResponse = (res, data) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(data, null, 4));
@@ -32,6 +36,7 @@ const sendResponse = (res, data) => {
 // App
 const app = express();
 
+// Global routes
 app.get('/', (req, res) => {
     sendResponse(res, {"error": "There is no service at / , For more information go to /help"});
 });
@@ -40,15 +45,10 @@ app.get('/help', (req, res) => {
     sendResponse(res, service_list);
 });
 
-app.get('/tracks', (req, res) => {
-    var j = new Tracks();
-    j
-        .getTrackData("")
-        .then(response => {
-            console.log("response " + response);
-            sendResponse(res, response);
-        });
-})
+artistRouter.use('/track/', trackRouter);
+app.use('/artist', artistRouter)
+app.use('/track', trackRouter);
+app.use('/tag', tagRouter);
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
