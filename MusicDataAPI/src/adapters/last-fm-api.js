@@ -120,6 +120,15 @@ class LastFmApi {
         })
     }
 
+    getTopTags(callback) {
+        const method = 'tag.gettoptags';
+        const TRACK_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&api_key=${API_KEY}&format=json`;
+
+        _getInfo(TRACK_REQUEST.replace(/\s/g, '%20'), data => {
+            callback(data);
+        })
+    }
+
 }
 
 function _getInfo(URL, callback) {
