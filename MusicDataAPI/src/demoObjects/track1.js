@@ -1,4 +1,4 @@
-{
+module.exports.demoTrack = {
     "_id": "5a4d1a881ff0ab3c046b9c90",
     "mainObject": {
         "artist": ["Infected Mushroom"],

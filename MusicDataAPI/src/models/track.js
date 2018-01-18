@@ -4,39 +4,30 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 class Track {
-    constructor(lastfmJSON, name, artist, album,) {
-        this.mainObject = {
-            "name": lastfmJSON.track.name,
-            "artist": lastfmJSON.track.artist.name,
-            "album": (lastfmJSON.track.album
-                ? lastfmJSON.track.album.title
-                : "Single"),
-            "pic": (lastfmJSON.track.album
-                ? lastfmJSON.track.album.image[3].text
-                : null)
-        }
-        this.subObjects = [
-            {
-                "LastFMObject": lastfmJSON
-            }
-        ];
+    constructor(name, artist, album, pic) {
+        this.name = name;
+        this.artist = artist;
+        this.album = (album ? album : 'Single');
+        this.pic = pic;
+    }
+
+    addLastFmJson(jsonData){
+        this.subObjects = [{"LastFMJson" :jsonData}]
     }
 
 }
 
 const schema = new Schema({
-    mainObject: {
-        Id: Schema.Types.ObjectId,
-        name: String,
-        artist: [String],
-        album: String,
-        version: String,
-        genre: [String],
-        tags: [String],
-        publishedYear: {
-            type: Number,
-            min: 1900
-        }
+    Id: Schema.Types.ObjectId,
+    name: String,
+    artist: [Schema.Types.Mixed],
+    album: String,
+    version: String,
+    genre: [Schema.Types.Mixed],
+    tags: [Schema.Types.Mixed],
+    publishedYear: {
+        type: Number,
+        min: 1900
     },
     subObjects: [Schema.Types.Mixed]
 });

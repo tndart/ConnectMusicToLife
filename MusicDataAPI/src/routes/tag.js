@@ -2,6 +2,24 @@ const express = require('express')
 const router = express.Router({mergeParams: true})
 const TagService = require('../services/tag')
 
+// Functions .Depracted.
+const sendResponse = (res, data) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.send(JSON.stringify(data, null, 4));
+    return res;
+};
+
+router.get('/top', (req, res) => {
+
+    var tag = new TagService();
+    tag.getTopTags((data) => {
+        sendResponse(res, data);
+    });
+
+});
+
 router.get('/:tagname/artists', (req, res) => {
 
     if (req.params.tagname) {

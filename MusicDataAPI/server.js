@@ -1,11 +1,13 @@
 'use strict';
 const express = require('express');
-const ArtistSrvice = require('./services/artist');
-const mongo = require('./adapters/db');
+const ArtistSrvice = require('./src/services/artist');
+const mongo = require('./src/adapters/db');
 
-const trackRouter = require('./routes/track');
-const artistRouter = require('./routes/artist');
-const tagRouter = require('./routes/tag');
+const trackRouter = require('./src/routes/track');
+const artistRouter = require('./src/routes/artist');
+const tagRouter = require('./src/routes/tag');
+
+const global = require('./src/global');
 
 // Constants
 const PORT = 8080;
@@ -26,23 +28,17 @@ const service_list = {
     ]
 };
 
-// Functions .Depracted.
-const sendResponse = (res, data) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(data, null, 4));
-    return res;
-};
 
 // App
 const app = express();
 
 // Global routes
 app.get('/', (req, res) => {
-    sendResponse(res, {"error": "There is no service at / , For more information go to /help"});
+    global.sendResponse(res, {"error": "There is no service at / , For more information go to /help"});
 });
 
 app.get('/help', (req, res) => {
-    sendResponse(res, service_list);
+    global.sendResponse(res, service_list);
 });
 
 artistRouter.use('/track/', trackRouter);

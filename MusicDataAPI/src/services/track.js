@@ -8,8 +8,6 @@ const TrackModel = require('../models/track')
 
 const global = require('../global')
 
-const fs = require('fs')
-
 class TrackService {
 
     constructor() {
@@ -20,16 +18,13 @@ class TrackService {
     getTrackData(songName, artistName, callback) {
         console.log('got here 1 ');
 
-        if (songName === "debug") {
-            var demoObject = JSON.parse(fs.readFileSync('./demoObjects/track1.json', 'utf8'))
-            callback(demoObject);
-        } else if (songName) {
+        if (songName) {
             console.log('got here 2 ');
 
             TrackModel
                 .Tracks
                 .find({
-                    "mainObject.name": new RegExp('\\b^' + songName + '$\\b', 'i')
+                    "name": new RegExp('\\b^' + songName + '$\\b', 'i')
                 }, (err, trackList) => {
                     if (err) {
                         callback(err);
@@ -44,6 +39,11 @@ class TrackService {
                             .getTrackInfo(artistName, songName, jsonData => {
 
                                 // Save the data that returned to the DB
+
+                                var pic = {"pic": (lastfmJSON.track.album
+                                    ? lastfmJSON.track.album.image[3].text
+                                    : null)}
+
                                 var newTrack = new TrackModel.Track(jsonData);
                                 var trackModel = new TrackModel.Tracks(newTrack);
                                 trackModel.save();

@@ -7,6 +7,7 @@ const trackRouter = require('../routes/track')
 router.get('/', (req, res) => {
     res.redirect('/help')
 });
+
 router.get('/:artistname', (req, res) => {
 
     if (req.params.artistname) {
