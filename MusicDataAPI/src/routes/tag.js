@@ -1,21 +1,14 @@
 const express = require('express')
 const router = express.Router({mergeParams: true})
-const TagService = require('../services/tag')
 
-// Functions .Depracted.
-const sendResponse = (res, data) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.send(JSON.stringify(data, null, 4));
-    return res;
-};
+const TagService = require('../services/tag')
+const global = require('../global')
 
 router.get('/top', (req, res) => {
 
     var tag = new TagService();
     tag.getTopTags((data) => {
-        sendResponse(res, data);
+        global.sendResponse(res, data);
     });
 
 });
@@ -23,9 +16,11 @@ router.get('/top', (req, res) => {
 router.get('/:tagname/artists', (req, res) => {
 
     if (req.params.tagname) {
+        console.log(`Start handle http request for "artists by tags", with tag ${req.params.tagname} `)
         var tag = new TagService();
         tag.getTopArtists(req.params.tagname, (data) => {
-            res.json(data);
+            console.log(`End handle http request for "artists by tags", with tag ${req.params.tagname} `)
+            global.sendResponse(res, data);
         });
     } else {
         res.redirect('/help')

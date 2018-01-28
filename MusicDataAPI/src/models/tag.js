@@ -13,10 +13,9 @@ class Tag {
     }
 
     addLastFmObject(jsonObject) {
-        this.subObjects = [{   
-            "LastFMObject": jsonObject,
-            "lastUpdated": Date.now()
-        }]
+        this.subObjects = {   
+            "LastFMObject": {...jsonObject, "lastUpdated": Date.now()}
+        }
     }
 }
 
@@ -27,7 +26,7 @@ const schema = new Schema({
     popularity: Number,
     createdAt: Date,
     lastUpdated: Date,
-    subObjects: [Schema.Types.Mixed]
+    subObjects: Schema.Types.Mixed
 });
 
 schema.loadClass(Tag);

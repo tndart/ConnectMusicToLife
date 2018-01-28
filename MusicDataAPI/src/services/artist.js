@@ -6,38 +6,22 @@ const DB = require('../adapters/db')
 
 const global = require('../global')
 
+const lastFmInstance = new lastfm_api();
+const dbConn = new DB().getDbConn();
+
 class ArtistService {
 
     constructor() {
-        this.api = new lastfm_api();
-        this.dbConn = new DB().getDbConn();
     }
 
-    getArtistData(artistName, callback) {
+    getArtistData(artistName, artistId, callback) {
         if (artistName === "debug") {
             callback({"error": "not implimated"});
         } else {
 
-            this
-                .api
-                .getArtistInfo(artistName, data => {
-                    callback(data);
-                });
-
-        }
-    }
-
-    getArtistTopTracks(artistName, callback) {
-        if (artistName === "debug") {
-            callback({"error": "not implimated"});
-        } else {
-
-            this
-                .api
-                .getArtistInfo(artistName, data => {
-                    callback(data);
-                });
-
+            lastFmInstance.getArtistInfo(artistName, artistId, data => {
+                callback(data);
+            });
         }
     }
 

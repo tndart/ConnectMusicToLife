@@ -51,13 +51,24 @@ class LastFmApi {
         }
     }
 
-    getArtistInfo(artistName, callback) {
+    getArtistInfo(artistName, artistId, callback) {
         const method = 'artist.getInfo';
-        const ARTIST_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&artist=${artistName}&api_key=${API_KEY}&format=json&autocorrect=1`;
+        var ARTIST_REQUEST = ``;
 
-        _getInfo(ARTIST_REQUEST.replace(/\s/g, '%20'), data => {
-            callback(data);
-        })
+        if (artistId){
+            ARTIST_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&mbid=${artistId}&api_key=${API_KEY}&format=json`
+        } else if (artistName) {
+            ARTIST_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&artist=${artistName}&api_key=${API_KEY}&format=json&autocorrect=1`
+        }
+
+        if (ARTIST_REQUEST !== '') {
+            _getInfo(ARTIST_REQUEST.replace(/\s/g, '%20'), data => {
+                callback(data);
+            })
+        }
+        else{
+            callback(null)
+        }
     }
 
     getArtistTopTracks(artistName, mbid, callback) {
@@ -98,6 +109,7 @@ class LastFmApi {
         const TRACK_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&tag=${tagName}&api_key=${API_KEY}&format=json&autocorrect=1`;
 
         _getInfo(TRACK_REQUEST.replace(/\s/g, '%20'), data => {
+            
             callback(data);
         })
     }
@@ -145,7 +157,11 @@ function _getInfo(URL, callback) {
 
             // The whole response has been received.
             res.on('end', () => {
-                callback(JSON.parse(data));
+                var result = JSON.parse(data);
+                if(result.error === 6){
+                    console.log("error");
+                }
+                callback(result);
             });
 
         }).on("error", (err) => {
