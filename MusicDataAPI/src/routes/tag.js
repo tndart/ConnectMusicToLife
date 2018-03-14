@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router({mergeParams: true})
 
 const TagService = require('../services/tag')
-const global = require('../global')
+const global = require('../utils/extensions')
 
 router.get('/top', (req, res) => {
 

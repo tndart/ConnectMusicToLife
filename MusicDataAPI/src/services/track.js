@@ -6,7 +6,7 @@ const DB = require('../adapters/db')
 const lastfm_api = require('../adapters/last-fm-api')
 const TrackModel = require('../models/track')
 
-const global = require('../global')
+const global = require('../utils/extensions')
 
 class TrackService {
 

@@ -1,50 +1,40 @@
-'use strict';
-const express = require('express');
-const ArtistSrvice = require('./src/services/artist');
-const mongo = require('./src/adapters/db');
+
+const express = require('express')
+const cors = require('cors')
+const bodyParser = require('body-parser')
 
 const trackRouter = require('./src/routes/track');
 const artistRouter = require('./src/routes/artist');
 const tagRouter = require('./src/routes/tag');
+const userRouter = require('./src/routes/user');
+const helpRouter = require('./src/routes/help');
+const playlistRouter = require('./src/routes/playlist')
 
-const global = require('./src/global');
+const global = require('./src/utils/extensions');
 
 // Constants
-const PORT = 8080;
-const HOST = '0.0.0.0';
-const service_list = {
-    "service_list": [
-        {
-            "id": 1,
-            "service_name": "Track Data",
-            "type": "GET",
-            "relative_url": "/tracks"
-        }, {
-            "id": 2,
-            "service_name": "Album Data",
-            "type": "GET",
-            "relative_url": "/albums"
-        }
-    ]
-};
-
+const PORT = 8080
+const HOST = '0.0.0.0'
 
 // App
-const app = express();
+const app = express()
+var jsonParser = bodyParser.json()
+app.use(cors())
+app.use(bodyParser.json());
+app.options('*', cors())
 
 // Global routes
 app.get('/', (req, res) => {
-    global.sendResponse(res, {"error": "There is no service at / , For more information go to /help"});
+    global.sendResponse(res, {"error": "There is no service at / , For more information go to /help"})
 });
 
-app.get('/help', (req, res) => {
-    global.sendResponse(res, service_list);
-});
-
-artistRouter.use('/track/', trackRouter);
+artistRouter.use('/track/', trackRouter)
 app.use('/artist', artistRouter)
-app.use('/track', trackRouter);
-app.use('/tag', tagRouter);
+app.use('/track', trackRouter)
+app.use('/tag', tagRouter)
+app.use('/user', userRouter)
+app.use('/playlist', playlistRouter)
+app.use('/help', helpRouter)
 
-app.listen(PORT, HOST);
-console.log(`Running on http://${HOST}:${PORT}`);
+app.listen(PORT, HOST)
+console.log(`Running on http://${HOST}:${PORT}`)

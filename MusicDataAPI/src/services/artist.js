@@ -4,7 +4,7 @@ const http = require('http');
 const lastfm_api = require('../adapters/last-fm-api');
 const DB = require('../adapters/db')
 
-const global = require('../global')
+const global = require('../utils/extensions')
 
 const lastFmInstance = new lastfm_api();
 const dbConn = new DB().getDbConn();

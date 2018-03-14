@@ -8,7 +8,7 @@ const TagModel = require('../models/tag')
 const ArtistModel = require('../models/artist')
 const ArtistService = require('./artist');
 
-const global = require('../global')
+const global = require('../utils/extensions')
 
 const lastFmInstance = new lastfm_api();
 const dbConn = new DB().getDbConn();
