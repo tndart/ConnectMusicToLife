@@ -31,7 +31,6 @@ function isExist(userId, email){
 }
 
 function create(user){
-
     return new Promise( (resolve, reject) => {
         isExist(null, user.profile.email).then( (exist, error) => {
             if (exist) { resolve("already exist") }
@@ -51,8 +50,8 @@ function create(user){
                       
                     UserModel.getUserModel().then(model => {
                         model.create(newUser).then(
-                        userCreated => resolve(userCreated),
-                        createError => reject(createError)
+                            userCreated => resolve(userCreated),
+                            creationError => reject(creationError)
                         )
                     })
                 })
@@ -94,7 +93,7 @@ function get(userId) {
 function updateJwtToken(userId, token){
     return new Promise( (resolve, reject) => {
         UserModel.getUserModel().then(model => {
-            model.findByIdAndUpdate(userId, { 'auth.jwtToken' : token })
+            model.findByIdAndUpdate(userId, { $set: { 'auth.jwtToken' : token } }, { new: true })
                 .then( userUpdated => { resolve ( userUpdated.auth.jwtToken ) } )
                 .catch( error => { reject(error) } )
         })

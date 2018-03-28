@@ -1,7 +1,7 @@
 'use strict';
 
 const http = require('http')
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt')
 
 const DB = require('../adapters/db')
 const UserModel = require('../modules/user/user.model')

@@ -1,7 +1,6 @@
 var mongoose = require('mongoose')
 var config = require('../config/config.helper')
 
-const DEFAULT_DB_URL = config.DEFAULT_DB_BASE_URL + config.DEFAULT_DB_NAME
 
 function createDBConnection(dbUrl) {
     return new Promise(resolve => {
@@ -11,6 +10,7 @@ function createDBConnection(dbUrl) {
 
 class DB {
     constructor(dbName) {
+        const DEFAULT_DB_URL = config.DEFAULT_DB_BASE_URL + config.DEFAULT_DB_NAME
         let actualDbName = ( dbName ? (config.DEFAULT_DB_BASE_URL + dbName) : DEFAULT_DB_URL )
         this.connection = createDBConnection(actualDbName)
         this.connection.Promise = global.Promise
@@ -20,7 +20,5 @@ class DB {
         return this.connection
     }
 }
-
-
 
 module.exports = DB;

@@ -148,5 +148,5 @@ module.exports = {
     CountryEnum,
     preferenceEventsEnum,
     AuthModesEnum
-};
+}
 
