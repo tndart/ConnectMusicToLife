@@ -6,39 +6,15 @@ from surprise import Dataset
 import pandas as pd
 import numpy as np
 
-# Set dataset files
-
-triplets_file = 'https://static.turi.com/datasets/millionsong/10000.txt'
-songs_metadata_file = 'https://static.turi.com/datasets/millionsong/song_data.csv'
-
-# Read the data and set the dataset
-
-song_df_1 = pd.read_table(triplets_file,header=None)
-song_df_1.columns = ['user_id', 'song_id', 'listen_count']
-
-
-song_df_2 =  pd.read_csv(songs_metadata_file)
-
-song_df = pd.merge(song_df_1, song_df_2.drop_duplicates(['song_id']), on="song_id", how="left")
-
-# Aggregating the data and calculationg the precentage
-# of the papularity of the song
-
-song_grouped = song_df.groupby(['title']).agg({'listen_count': 'count'}).reset_index()
-grouped_sum = song_grouped['listen_count'].sum()
-song_grouped['percentage']  = song_grouped['listen_count'].div(grouped_sum)*100
-song_grouped.sort_values(['listen_count', 'title'], ascending = [0,1])
-
-reader = Reader(line_format='user item rating timestamp', sep='\t')
-
-data = Dataset.load_from_file(file_path, reader=reader)
-
+# First train an SVD algorithm on the movielens dataset.
+data = Dataset.load_builtin('ml-100k')
+trainset = data.build_full_trainset()
 algo = SVD()
-algo.fit(train_data)
+algo.fit(trainset)
 
 # Than predict ratings for all pairs (u, i) that are NOT in the training set.
 testset = trainset.build_anti_testset()
-predictions = algo.test(test_data)
+predictions = algo.test(testset)
 
 def get_top_n(predictions,userid ,n=10):
     '''Return the top-N recommendation for each user from a set of predictions.
