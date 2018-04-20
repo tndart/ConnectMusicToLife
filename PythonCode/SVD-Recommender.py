@@ -43,9 +43,9 @@ def get_top_n(predictions,userid ,n=10):
             top_n[uid] = user_ratings[:n]
 
     return top_n
-    
-    top_n = get_top_n(predictions,userid='260' ,n=10)
 
+top_n = get_top_n(predictions,userid=str(sys.argv[1]),n=int(sys.argv[2]))
+  
 # Print the recommended items for user
 for uid, user_ratings in top_n.items():
     print(uid, [iid for (iid, _) in user_ratings])
