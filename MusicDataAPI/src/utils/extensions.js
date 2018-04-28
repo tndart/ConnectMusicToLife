@@ -11,6 +11,8 @@ Object.defineProperty(String.prototype, 'capitalize', {
 });
 
 module.exports.sendResponse = (res, json) => {
+    console.log("Returned value " /*+ JSON.stringify(json)*/)
+
     res.setHeader('Content-Type', 'application/json');
     //res.setHeader("Access-Control-Allow-Origin", "*");
     //res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

@@ -1,18 +1,20 @@
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const UserService = require('../user/user.service')
 const config = require('../config/config.helper')
+const UserService2 = require('../user/user.service')
 
 // If needed, create (or recreate) the user token and updating the user entity in db
 // returns the token
 function getToken(userId){
+    const UserService2 = require('../user/user.service')
+
     return new Promise( (resolve, reject) => {
-        UserService.get(userId).then(user => {
+        UserService2.get(userId).then(user => {
             if (!user.auth.jwtToken || user.auth.jwtToken === ""){
                 createToken(user).then(token => {
                     if (token) {
-                        UserService.updateJwtToken(user._id, token).then(updatedToken => {
+                        UserService2.updateJwtToken(user._id.toString(), token).then(updatedToken => {
                             resolve(updatedToken)
                         })
                     }
@@ -39,14 +41,15 @@ function verifyExpiration(token) {
 }
 
 function verifyToken(token) {
+    const UserService2 = require('../user/user.service')
     return new Promise( (resolve, reject) => {
         let decodedToken = decodeToken(token)
 
-        if (decodedToken._id === undefined){
+        if (decodedToken === undefined || decodedToken._id === undefined){
             reject({ message: "Token does not contain _id value"})
         }
 
-        UserService.get(decodedToken._id).then(user => {
+        UserService2.get(decodedToken._id).then(user => {
             if (user.auth.jwtToken === token){
                 resolve(true)
             } else {
@@ -70,10 +73,12 @@ function createToken(user, expiredTime){
 }
 
 function login(user){
+    const UserService2 = require('../user/user.service')
+
     return new Promise( (resolve, reject) => {
         if (user === undefined || 
             user.profile === undefined || 
-            user.profile.email === undefined ||
+            user.profile.username === undefined ||
             user.auth === undefined || 
             (user.auth.local && user.auth.local.password === undefined && user.auth.google === undefined)) {
                 reject( { message: 'User not defined as required' } )
@@ -87,12 +92,16 @@ function login(user){
             loginType = 'Google'
         }
 
-        UserService.get(user._id).then(userFromDB => {
+        const userId = user._id && user._id.toString()
+        const userName = user.profile && user.profile.username
+        const googleId = user.auth && user.auth.google && user.auth.google.googleId
+
+        UserService2.get(userId, userName, googleId).then(userFromDB => {
             if (!userFromDB){
                 reject({ message: "User not exist" })
             }
-            if (userFromDB.profile.email !== user.profile.email){
-                reject({ message: "User email from DB not match to given user email" })
+            if (userFromDB.profile.username !== user.profile.username){
+                reject({ message: "Username from DB not match to given username" })
             }
             if(loginType === 'Local'){
                 verifyLocalPassword(user.auth.local.password, userFromDB.auth.local.password).then( value => {
@@ -100,17 +109,25 @@ function login(user){
                         reject({ message: 'Cannot logged in. The given password is wrong'})
                     }
 
-                    resolve(value)
+                    getToken(user._id).then(token => {
+                        resolve(token);
+                    })
+                
                 })
             }
+
+            resolve(userFromDB)
         })
+        
     })
 }
 
 function signup(user) {
+    const UserService2 = require('../user/user.service')
+
     return new Promise( (resolve, reject) => {
-        UserService.create(user).then(userCreated => {
-             getToken(userCreated._id).then(token => {
+        UserService2.create(user).then(userCreated => {
+             getToken(userCreated._id.toString()).then(token => {
                 userCreated.auth.jwtToken = token
                 resolve(userCreated)
              }).catch(error => reject(error))
@@ -123,6 +140,7 @@ function verifyLocalPassword(password, encryptedPassword) {
         if (password == undefined || encryptedPassword == undefined) {
             reject ({ message: "Local password not set" })
         }
+
         bcrypt.compare(password, encryptedPassword).then( value => {
             resolve(value)
         }).catch(error => reject(error))

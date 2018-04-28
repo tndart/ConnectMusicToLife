@@ -1,105 +1,227 @@
 const bcrypt = require('bcrypt')
 const ObjectID = require('mongodb').ObjectID;
 
-const UserModel = require('./user.model')
+var UserModel = require('./user.model')
+var AuthService = require('../auth/auth.service')
 
-// Returns true if the user exist in db
-function isExist(userId, email){
-    
-    return new Promise( (resolve, reject) => {
-        let query = undefined
-
-        if (userId){
-            query = { '_id': userId }
-        } else if (email){
-            query = { 'profile.email':  email }
-        } else {
-            resolve(false)
+function updatePreferences(user){
+    return new Promise((resolve, reject) => {
+        if ((!user) || (!user.preferences) || (!user._id)){
+            reject({ message: "No user data sent"})
+        }
+        let promiseGenres = undefined;
+        let promiseArtists = undefined;
+        /**/
+        if (user.preferences.genres) {
+            promiseGenres = UserModel.getUserModel().findByIdAndUpdate(user._id, {
+                $addToSet: { 
+                    'preferences.genres': { $each: [...user.preferences.genres] },
+                }
+            }, { 
+                multi: true 
+            })
+        }
+        
+        if (user.preferences.artists) {
+            promiseArtists = UserModel.getUserModel().findByIdAndUpdate(user._id, {
+                $addToSet: { 
+                    'preferences.artists': { $each: [...user.preferences.artists] },                   
+                }
+            }, { 
+                multi: true 
+            })
         }
 
-        UserModel.getUserModel().then(model => {
-            model.count(query).exec().then((counter, err) => {
-                if (err) {
-                    reject(err)
-                } else if (counter > 0) {
-                    resolve(true)
-                }
-                resolve(false)
-            })
-        })
-    })    
-}
+        Promise.all([promiseGenres, promiseArtists]).then(res => {
+            let user = {};
+            let userAlreadyCopied = false;
 
-function create(user){
-    return new Promise( (resolve, reject) => {
-        isExist(null, user.profile.email).then( (exist, error) => {
-            if (exist) { resolve("already exist") }
-            if (error) { reject(error) }
-            
-            bcrypt.genSalt(5).then(salt => {
-                bcrypt.hash(user.auth.local.password, salt).then(hashed_password => {
-                    var newUser = new UserModel.User(
-                        user.profile.firstname, 
-                        user.profile.lastname, 
-                        user.profile.email, 
-                        user.profile.birthdate, 
-                        user.profile.gender,
-                        user.profile.country, 
-                        user.preferences.events, 
-                        hashed_password)
-                      
-                    UserModel.getUserModel().then(model => {
-                        model.create(newUser).then(
-                            userCreated => resolve(userCreated),
-                            creationError => reject(creationError)
-                        )
-                    })
-                })
-            })
+            array.forEach(element => {
+                if (element.preferences.artists){
+                    if (!userAlreadyCopied){
+                        user = element;
+                        userAlreadyCopied = true
+                    } else {
+                        user.preferences.artists = element.preferences.artists
+                    }
+                }
+                if (element.preferences.genres){
+                    if (!userAlreadyCopied){
+                        user = element;
+                        userAlreadyCopied = true
+                    } else {
+                        user.preferences.genres = element.preferences.genres
+                    }
+                }
+            });
+
+            resolve(user)
+        }).catch(err => {
+            reject(err)
         })
     })
 }
 
-function remove(_id, email) {
-    return new Promise( (resolve, reject) => {
-        isExist(_id, email).then(exist => {
-            if (!exist) { reject({ message: 'This user not exist'}) }
+// Returns true if the user exist in db
+function isExist(userId, username, googleId) {
 
-            if (!_id){
+    return new Promise((resolve, reject) => {
+        let query = undefined
+
+        if (userId) {
+            query = {
+                _id: new ObjectID(userId)
+            }
+        } else if (username) {
+            query = {
+                'profile.username': username
+            }
+        } else if (googleId) {
+            query = {
+                'auth.google.googleId': googleId
+            }
+        } else {
+            resolve(false)
+        }
+
+        UserModel.getUserModel().find(query).count().then((counter, err) => {
+            if (err) {
+                reject(err)
+            } else if (counter > 0) {
+                resolve(true)
+            }
+            resolve(false)
+        })
+    })
+}
+
+function loginOrSignupByGoogle(user) {
+    return new Promise((resolve, reject) => {
+        isExist(null, null, user.auth.google.googleId).then(exist => {
+            if (exist) {
+                AuthService.login(user).then(res => {
+                    resolve(res);
+                }).catch(err => {
+                    reject(err);
+                })
+            } else {
+                AuthService.signup(user).then(res => {
+                    resolve(res);
+                }).catch(err => {
+                    reject(err);
+                })
+            }
+        })
+    })
+}
+
+function create(user) {
+    return new Promise((resolve, reject) => {
+        isExist(null, user.profile.username).then((exist, error) => {
+            if (exist) {
+                resolve("already exist")
+            }
+            if (error) {
+                reject(error)
+            }
+
+            UserModel.getUserModel().create(user).then(
+                userCreated => resolve(userCreated),
+                creationError => reject(creationError)
+            )
+        })
+    })
+}
+
+function remove(_id, username) {
+    return new Promise((resolve, reject) => {
+        isExist(_id, username).then(exist => {
+            if (!exist) {
+                reject({
+                    message: 'This user not exist'
+                })
+            }
+
+            if (!_id) {
                 _id = UserModel.getUserModel().then(model => {
-                    model.find({ 'profile.email' : email })
+                    model.find({
+                        'profile.username': username
+                    })
                 })
             }
 
             UserModel.getUserModel().then(model => {
                 model.findByIdAndRemove(_id)
                     .then(() => resolve(true))
-                    .catch(error => reject(error))       
-            }) 
+                    .catch(error => reject(error))
+            })
         })
     })
 }
 
-function get(userId) {
-    return new Promise( (resolve, reject) => {
-        UserModel.getUserModel().then(model => {
-            model.findById(userId)
-                .then(user => resolve(user))
-                .catch(error => reject(error))
-        })
+function get(userId, username, googleId) {
+    return new Promise((resolve, reject) => {
+        if (!userId && !username && !googleId){
+            reject ({ source: "user.service.js: get", message: "Require one of the following params: userId, username or googleId"})
+        }
+    
+        let promise = null;
+
+        if (userId){
+            promise = UserModel.getUserModel().findById(userId)
+        }
+        else {
+            let query = null;
+            if (username) {
+                query = { 'profile.username': username }
+            } else if (googleId) {
+                query = { 'auth.google.googleId': googleId }
+            }
+
+            promise = UserModel.getUserModel().findOne(query)
+        }
+
+        if (promise){
+            promise
+                .populate('preferences.genres')
+                .populate('preferences.artists')
+                .then(user => {
+                resolve(user)
+            }).catch(error => {
+                reject(error)
+            })
+        } else {
+            reject ({ source: "user.service.js: get", message: "Unknown error occurred"})
+        }
+
+       
     })
 }
 
-function updateJwtToken(userId, token){
-    return new Promise( (resolve, reject) => {
-        UserModel.getUserModel().then(model => {
-            model.findByIdAndUpdate(userId, { $set: { 'auth.jwtToken' : token } }, { new: true })
-                .then( userUpdated => { resolve ( userUpdated.auth.jwtToken ) } )
-                .catch( error => { reject(error) } )
+function updateJwtToken(userId, token) {
+    return new Promise((resolve, reject) => {
+        UserModel.getUserModel().findByIdAndUpdate(userId, {
+            $set: {
+                'auth.jwtToken': token
+            }
+        }, {
+            new: true
         })
+            .then(userUpdated => {
+                resolve(userUpdated.auth.jwtToken)
+            })
+            .catch(error => {
+                reject(error)
+            })
     })
 }
 
 module.exports = {
-    isExist, create, remove, get, updateJwtToken
+    isExist,
+    create,
+    remove,
+    get,
+    updateJwtToken,
+    loginOrSignupByGoogle,
+    updatePreferences,
 }

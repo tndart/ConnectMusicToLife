@@ -1,7 +1,7 @@
 'use strict';
-const DB = require('../adapters/db');
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const DB = require('../modules/mongo/mongo.adapter');
+const Mongoose = require('mongoose');
+const Schema = Mongoose.Schema;
 
 class Tag {
     constructor(name, songCounter = -1, popularity = -1) {
@@ -30,8 +30,7 @@ const schema = new Schema({
 });
 
 schema.loadClass(Tag);
-var db = new DB().getDbConn();
-var Tags = db.model('Tag', schema);
+var Tags = DB.model('Tag', schema);
 
 module.exports = {
     Tag: Tag,

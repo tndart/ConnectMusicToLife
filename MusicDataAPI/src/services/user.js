@@ -9,8 +9,8 @@ const extensions = require('../utils/extensions')
 const globals = require('../utils/globals')
 const jwt = require('jsonwebtoken')
 
-
 const dbConn = new DB().getDbConn();
+
 
 function login(user, callback){
     if (user && user.data.username !== '' && user.auth.local.password !== ''){
@@ -88,5 +88,5 @@ function signup(user, callback) {
 
 module.exports = {
     signup,
-    login
+    login,
 }

@@ -1,8 +1,7 @@
 'use strict';
-const mongoose = require('mongoose');
-
+const Mongoose = require('mongoose');
 const DB = require('../mongo/mongo.adapter');
-const Schema = mongoose.Schema;
+const Schema = Mongoose.Schema;
 
 const GenderEnum = {
     Male: 'Male',
@@ -31,51 +30,17 @@ const AuthModesEnum = {
 }
 
 class User {
-    constructor(firstname,
-        lastname,
-        email,
-        birthdate, 
-        gender = GenderEnum.Another, 
-        country = CountryEnum.Israel, 
-        preferenceEvents = [ preferenceEventsEnum.UNKNOWN ],
-        password = undefined, 
-        googleId = undefined, 
-        googleToken = undefined) {
-
-        try {
-            var date = birthdate.split('-')
-            date = new Date(date[0], date[1] - 1, date[2])
-        } catch (error) {
-            date = undefined
-            console.log("User Ctor: Cant parse birthdate object " + birthdate);
-        }   
-       
+    constructor(username, firstname, lastname, googleId, googleToken) {       
         this.profile = {
             firstname,
             lastname,
-            email,
-            birthdate: date,
-            gender,
-            country,
+            username
         }
 
-        this.preferences =  {
-            events: preferenceEvents,
-            dayHours: []
-        }
-
-        var mode = undefined
-
-        if (password)
-            mode = AuthModesEnum.Local
-        else if (googleToken && googleId)
-            mode = AuthModesEnum.Google
+        this.preferences = undefined;
 
         this.auth = {
-            mode: mode,
-            local: {
-                password
-            },
+            mode: "Google",
             google: {
                 googleId,
                 googleToken
@@ -90,7 +55,7 @@ const schema = new Schema({
     profile: {
         firstname: String,
         lastname: String,
-        email: { type: String, lowercase: true, trim: true },
+        username: { type: String, lowercase: true, trim: true },
         birthdate: Date,
         gender: {
             type: String,
@@ -114,7 +79,11 @@ const schema = new Schema({
                     preferenceEventsEnum.Driving]
             }
         ],
-        dayHours: Array.of(Number)
+        dayHours: Array.of(Number),
+        artists: [{type: Schema.Types.ObjectId, ref: 'Artist'}],
+        songs:  Array.of(String) || Array.of(Object),
+        genres:  [{type: Schema.Types.ObjectId, ref: 'Tag'}]
+        
     },
     auth: {
         mode: { 
@@ -132,13 +101,9 @@ const schema = new Schema({
     }
 });
 
+schema.loadClass(User)
 function getUserModel(){
-    return new Promise(resolve => {
-        schema.loadClass(User)
-        new DB().getConnection().then(db => {
-            resolve(db.model('User', schema))
-        })
-    })
+    return DB.model('User', schema)
 }
 
 module.exports = {

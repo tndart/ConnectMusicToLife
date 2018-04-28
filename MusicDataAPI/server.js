@@ -23,7 +23,6 @@ const HOST = '0.0.0.0'
 // App
 const app = express()
 app.use(helmet())
-let jsonParser = bodyParser.json()
 app.use(cors())
 app.use(cookieParser())
 app.use(bodyParser.json());
