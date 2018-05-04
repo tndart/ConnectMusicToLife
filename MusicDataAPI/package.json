@@ -10,7 +10,11 @@
         "debugtest": "node --inspect-brk ./node_modules/jest/bin/jest -i"
     },
     "dependencies": {
+        "body-parser": "^1.18.2",
+        "cookie-parser": "^1.4.3",
+        "cors": "^2.8.4",
         "express": "^4.16.2",
+        "helmet": "^3.12.0",
         "https": "^1.0.0",
         "mongoose": "^5.0.0-rc1"
     },
