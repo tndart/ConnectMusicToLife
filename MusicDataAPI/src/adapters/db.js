@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var instance = null;
-const DB_NAME = 'mongodb://127.0.0.1/graduateDB';
+const DB_NAME = 'mongodb://127.0.0.1:3100/graduateDB';
 
 class DB {
 
