@@ -1,5 +1,5 @@
 'use strict';
-const DB = require('../modules/mongo/mongo.adapter');
+const DB = require('../mongo/mongo.adapter');
 const Mongoose = require('mongoose');
 const Schema = Mongoose.Schema;
 
@@ -23,7 +23,7 @@ class Artist {
 }
 
 const schema = new Schema({
-    Id: Schema.Types.ObjectId,
+    id: Schema.Types.ObjectId,
     name: String,
     albums: [Schema.Types.Mixed],
     tags: [Schema.Types.Mixed],

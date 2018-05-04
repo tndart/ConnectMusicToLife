@@ -10,7 +10,7 @@ const artistRouter = require('./src/routes/artist')
 const tagRouter = require('./src/routes/tag')
 const userRouter = require('./src/routes/user')
 const helpRouter = require('./src/routes/help')
-const playlistRouter = require('./src/routes/playlist')
+const playlistRouter = require('./src/modules/playlist/playlist.router')
 
 const AuthMiddleware = require('./src/modules/auth/auth.middleware')
 

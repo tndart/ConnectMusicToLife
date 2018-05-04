@@ -5,7 +5,7 @@ const http = require('http')
 const DB = require('../adapters/db')
 const lastfm_api = require('../adapters/last-fm-api')
 const TagModel = require('../models/tag')
-const ArtistModel = require('../models/artist')
+const ArtistModel = require('../modules/artist/artist.model')
 const ArtistService = require('./artist');
 
 const global = require('../utils/extensions')

@@ -4,6 +4,17 @@ const ObjectID = require('mongodb').ObjectID;
 var UserModel = require('./user.model')
 var AuthService = require('../auth/auth.service')
 
+
+function getPreferencesByUserId(userId) {
+    return new Promise((resolve, reject) => {
+        UserModel.getUserModel().findById(userId).then(user => {
+            resolve(user.preferences);
+        }).catch(err => {
+            reject(err);
+        })
+    })
+}
+
 function updatePreferences(user){
     return new Promise((resolve, reject) => {
         if ((!user) || (!user.preferences) || (!user._id)){
@@ -36,7 +47,7 @@ function updatePreferences(user){
             let user = {};
             let userAlreadyCopied = false;
 
-            array.forEach(element => {
+            res.forEach(element => {
                 if (element.preferences.artists){
                     if (!userAlreadyCopied){
                         user = element;
@@ -224,4 +235,5 @@ module.exports = {
     updateJwtToken,
     loginOrSignupByGoogle,
     updatePreferences,
+    getPreferencesByUserId
 }
