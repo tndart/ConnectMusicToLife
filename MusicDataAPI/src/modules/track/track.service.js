@@ -11,19 +11,18 @@ function getTracksByPreferences(preferences, amount) {
         const artists = preferences.artists
         const genres = preferences.genres
 
-
         getTracksByArtists(artists, amount).then(tracksByArtists => {
             if (tracksByArtists && tracksByArtists.length >= amount){
                return resolve(tracksByArtists)
             }
 
-            getTracksByGenres(genres, amount - tracksByArtists.length).then(tracksByGenres => {
+           /* getTracksByGenres(genres, amount - tracksByArtists.length).then(tracksByGenres => {
                 const fullList = tracksByArtists.concat(tracksByGenres)
                 const sortedFullList = fullList.sort((a,b) => {
                     return a.popularity && b.popularity && a.popularity > b.popularity
                 })
                 resolve(sortedFullList);
-            })
+            })*/
         }).catch(reject)
     })
 }
