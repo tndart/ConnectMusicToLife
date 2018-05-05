@@ -7,8 +7,6 @@ function getNext(userId, amount) {
     return new Promise((resolve, reject) => {
         UserService.getPreferencesByUserId(userId)
         .then(preferences => TrackService.getTracksByPreferences(preferences, amount))
-        .then(TrackService.getYoutubeURLList)
-        .then(TrackService.upsertList)
         .then(sliceAndShuffleTheResult).then(data => {
             resolve(data)
         })
@@ -29,14 +27,18 @@ function sliceAndShuffleTheResult(list) {
         let newList = [];
         
         for (let index = 0; index < amount; index++) {
-            const key = Math.floor((Math.random() * list.length))
-            const currItem = list[key]
-            const newItem = {
-                name: `${currItem.artist[0]} - ${currItem.name}`,
-                youtubeId: currItem.subObjects[1].YoutubeJson[0].id.videoId
+            try {
+                const key = Math.floor((Math.random() * list.length))
+                const currItem = list[key]
+                const newItem = {
+                    name: `${currItem.artist[0]} - ${currItem.name}`,
+                    youtubeId: currItem.subObjects[1].YoutubeJson[0].id.videoId
+                }
+                
+                newList.push(newItem)
+            } catch (error) {
+                console.error("sliceAndShuffleTheResult", error);
             }
-            
-            newList.push(newItem)
         }
 
         resolve(newList);

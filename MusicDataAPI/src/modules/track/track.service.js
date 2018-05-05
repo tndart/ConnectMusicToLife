@@ -47,6 +47,7 @@ function getTracksByArtists(artists, amount){
                 ArtistService.getArtistsFromDB(artists)
                 .then(getTracksByArtistsFromLastFM)
                 .then(buildTrackListFromLastFMData)
+                .then(getYoutubeURLList)
                 .then(upsertList)
                 .then(resolve)
                 .catch(reject)
