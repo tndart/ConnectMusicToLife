@@ -12,6 +12,7 @@ function getTracksByPreferences(preferences, amount) {
         const genres = preferences.genres
 
         getTracksByArtists(artists, amount).then(tracksByArtists => {
+            console.log(`Got ${tracksByArtists.length} from getTracksByArtists and if it's greater that 10 it'll returned`)
             if (tracksByArtists && tracksByArtists.length >= amount){
                return resolve(tracksByArtists)
             }
@@ -39,8 +40,9 @@ function getTracksByArtists(artists, amount){
         ArtistService.getArtistsFromDB(artists)
         .then(getTracksByArtistsFromDB)
         .then(dbTracks => {
+            console.log(`Got ${dbTracks.length} tracks from db`)
             if (dbTracks && dbTracks.length > amount){
-                resolve(dbTracks)
+                return resolve(dbTracks)
             }
             else {
                 ArtistService.getArtistsFromDB(artists)
@@ -80,10 +82,13 @@ function getTracksByArtistsFromLastFM(artists) {
         const artistsMbid = artists.map(artist => artist.subObjects.LastFMObject.mbid)
         let promises = [];
         let tracks = [];
+        console.log("Trying to get TrackByArtistsFromLastFM");
 
-        artistsMbid.forEach(mbid => {
+        for (let index = 0; index < artistsMbid.length; index++) {
+            const mbid = artistsMbid[index];
             promises.push(LastFmAPI.getArtistTopTracks(mbid))
-        });
+            
+        }
         
         Promise.all(promises).then(results => {
 
@@ -92,6 +97,7 @@ function getTracksByArtistsFromLastFM(artists) {
                 tracks = tracks.concat(tracksOfArtist);
             }
             
+            console.log(`Got ${tracks.length} tracks from TrackByArtistsFromLastFM`);
             resolve(tracks)
         }).catch(reject)
     })
@@ -128,6 +134,9 @@ function getTracksByGenresFromDB(genres) {
 
 function upsertList(list) {
     return new Promise((resolve, reject) => {
+
+        console.log(`Trying Upserting ${list.length} tracks`)
+        
         const promiseList = list.map((item) => {
             if (item._id){
                 return TrackModel.Tracks.findByIdAndUpdate(item._id, item , {upsert: true, new: true}) 
@@ -141,7 +150,7 @@ function upsertList(list) {
             for (let index = 0; index < results.length; index++) {
                 newList = newList.concat(results[index])
             }
-            
+            console.log(`After Upsert, we got ${newList.length} tracks`)
             resolve(newList)
         }).catch(reject)
     })

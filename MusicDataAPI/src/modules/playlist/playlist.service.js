@@ -11,14 +11,6 @@ function getNext(userId, amount) {
             resolve(data)
         })
     })
-
-    // get preferences(user) => user.preferences
-    // if got, 
-        // trying to get tracks => list<track> 
-    // else 
-        // getting top hits => list<track> 
-    // get youtubeURLS (list<track>) => list<track>
-    // returned list<trackss>
 }
 
 function sliceAndShuffleTheResult(list) {
@@ -26,6 +18,10 @@ function sliceAndShuffleTheResult(list) {
         const amount = list.length > 10 ? 10 : list.length
         let newList = [];
         
+        if (list.length < 10){
+            return resolve(list);
+        }
+
         for (let index = 0; index < amount; index++) {
             try {
                 const key = Math.floor((Math.random() * list.length))
