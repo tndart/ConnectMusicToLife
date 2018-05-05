@@ -29,7 +29,8 @@ function updatePreferences(user){
                     'preferences.genres': { $each: [...user.preferences.genres] },
                 }
             }, { 
-                multi: true 
+                multi: true,
+                new: true
             })
         }
         
@@ -39,7 +40,8 @@ function updatePreferences(user){
                     'preferences.artists': { $each: [...user.preferences.artists] },                   
                 }
             }, { 
-                multi: true 
+                multi: true,
+                new: true
             })
         }
 
@@ -47,24 +49,20 @@ function updatePreferences(user){
             let user = {};
             let userAlreadyCopied = false;
 
-            res.forEach(element => {
-                if (element.preferences.artists){
-                    if (!userAlreadyCopied){
-                        user = element;
-                        userAlreadyCopied = true
-                    } else {
-                        user.preferences.artists = element.preferences.artists
+            for (let index = 0; index < res.length; index++) {
+                const element = res[index];
+                if (element && !userAlreadyCopied) {
+                    user = element;
+                    userAlreadyCopied = true
+                } else {
+                    if (element && element.preferences.artists && element.preferences.artists.length > 0){
+                        user.preferences.artists.concat(element.preferences.artists)
+                    }
+                    if (element && element.preferences.genres && element.preferences.genres.length > 0){
+                        user.preferences.genres.concat(element.preferences.genres)
                     }
                 }
-                if (element.preferences.genres){
-                    if (!userAlreadyCopied){
-                        user = element;
-                        userAlreadyCopied = true
-                    } else {
-                        user.preferences.genres = element.preferences.genres
-                    }
-                }
-            });
+            }
 
             resolve(user)
         }).catch(err => {
