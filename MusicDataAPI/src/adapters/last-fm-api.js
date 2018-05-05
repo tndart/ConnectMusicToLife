@@ -140,8 +140,34 @@ class LastFmApi {
             callback(data);
         })
     }
-
 }
 
+function _getInfo(URL, callback) {
+        
+    console.info(`LastFmApi:: Sending Request ${URL}`);
+    instance.auth(token => {
+        http.get(URL, (res) => {
+            var data = '';
+
+            // A chunk of data has been recieved.
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            // The whole response has been received.
+            res.on('end', () => {
+                var result = JSON.parse(data);
+                if(result.error === 6){
+                    console.log("error");
+                }
+                callback(result);
+            });
+
+        }).on("error", (err) => {
+            console.log("Error: " + err.message);
+            callback(err);
+        });
+    });
+}
 
 module.exports = LastFmApi;
