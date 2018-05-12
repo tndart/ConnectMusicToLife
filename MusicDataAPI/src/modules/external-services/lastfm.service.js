@@ -72,11 +72,15 @@ function get(fullUrl){
     
             // The whole response has been received.
             res.on('end', () => {
-                var result = JSON.parse(data);
-                if(result.error === 6){
-                    console.log("Error: " + JSON.stringify(result));
+                try {
+                    var result = JSON.parse(data);
+                    if(result.error === 6){
+                        console.log("Error: " + JSON.stringify(result));
+                    }
+                    resolve(result);
+                } catch (error) {
+                    resolve({message: "LastFM service::get => Error occured " + JSON.stringify(error)})
                 }
-                resolve(result);
             });
     
         }).on("error", (err) => {
