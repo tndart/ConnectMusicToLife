@@ -116,6 +116,7 @@ function login(user){
                 })
             }
 
+            console.log("User logged in!!! " + userFromDB.profile.username);
             resolve(userFromDB)
         })
         
@@ -127,8 +128,10 @@ function signup(user) {
 
     return new Promise( (resolve, reject) => {
         UserService2.create(user).then(userCreated => {
+            console.log("New User Created!!! " + userCreated.profile.username)
              getToken(userCreated._id.toString()).then(token => {
                 userCreated.auth.jwtToken = token
+                console.log("New User Got Token!!! " + userCreated.auth.jwtToken)
                 resolve(userCreated)
              }).catch(error => reject(error))
         }).catch(error => reject(error))

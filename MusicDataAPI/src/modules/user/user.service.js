@@ -102,7 +102,10 @@ function isExist(userId, username, googleId) {
 
 function loginOrSignupByGoogle(user) {
     return new Promise((resolve, reject) => {
+        console.log("Trying to login with " + user && user.profile && user.profile.username)
         isExist(null, null, user.auth.google.googleId).then(exist => {
+            console.log("Next Action? " + (exist ? "Login": "Signup"))
+            
             if (exist) {
                 AuthService.login(user).then(res => {
                     resolve(res);
