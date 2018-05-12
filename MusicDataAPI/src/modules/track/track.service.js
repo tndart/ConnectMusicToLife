@@ -47,6 +47,7 @@ function getTracksByArtists(artists, amount){
             else {
                 ArtistService.getArtistsFromDB(artists)
                 .then(getTracksByArtistsFromLastFM)
+                .then(attachListLastFMFulldetails)
                 .then(buildTrackListFromLastFMData)
                 .then(getYoutubeURLList)
                 .then(upsertList)
@@ -58,23 +59,15 @@ function getTracksByArtists(artists, amount){
 }
 
 function buildTrackListFromLastFMData(tracksFromLastFM){
-    return tracksFromLastFM.map(lastFMTrack => {
-        let newTrack = new TrackModel.Track(lastFMTrack.name, lastFMTrack.artist.name)
-        newTrack.addLastFmJson(lastFMTrack);
-        return newTrack
+    return new Promise((resolve, reject) => {
+        const newList = tracksFromLastFM.map(lastFMTrack => {
+            let newTrack = new TrackModel.Track(lastFMTrack.name, lastFMTrack.artist.name)
+            newTrack.addLastFmJson(lastFMTrack);
+            return newTrack
+        })
+
+        resolve(newList)
     })
-}
-
-function getTracksByGenres(genres, amount) {
-    if (!genres || genres.length <= 0) {
-        return []
-    } 
-    if (!amount || amount <= 0) {
-        return []
-    } 
-
-    
-
 }
 
 function getTracksByArtistsFromLastFM(artists) {
@@ -101,10 +94,6 @@ function getTracksByArtistsFromLastFM(artists) {
             resolve(tracks)
         }).catch(reject)
     })
-}
-
-function getTracksByGenresFromLastFM(genres) {
-    
 }
 
 function getTracksByArtistsFromDB(artists) {
@@ -192,18 +181,15 @@ function getYoutubeURLList(ListOfTracks) {
         let returnedList = [];
         let promiseList = [];
 
-        if (ListOfTracks && ListOfTracks.length > 0 &&
-            ListOfTracks[0] && ListOfTracks[0].subObjects &&
-            ListOfTracks[0].subObjects.length > 1 && 
-            ListOfTracks[0].subObjects[1] && 
-            ListOfTracks[0].subObjects[1].YoutubeJson){
-                return resolve(ListOfTracks)
-        }
+        returnedList = ListOfTracks.filter(item => item && item.subObjects && item.subObjects.YoutubeJson);
+        let listToGetYoutubeId = ListOfTracks.filter(item => item && ((!item.subObjects) || (!item.subObjects.YoutubeJson)) );
 
-        for (let index = 0; index < ListOfTracks.length; index++) {
-            const name = ListOfTracks[index].name;
-            const artist = ListOfTracks[index].artist;
-            promiseList.push(attachYoutubeURL(name, artist, ListOfTracks[index]))
+        for (let index = 0; index < listToGetYoutubeId.length; index++) {
+            if (listToGetYoutubeId[index]){
+                const name = listToGetYoutubeId[index].name;
+                const artist = listToGetYoutubeId[index].artist;
+                promiseList.push(attachYoutubeURL(name, artist, listToGetYoutubeId[index]))
+            }
         }
 
         Promise.all(promiseList).then(elements => {
@@ -211,10 +197,37 @@ function getYoutubeURLList(ListOfTracks) {
                 const element = elements[index2];
                 returnedList.push(element);
             }
-
+            
             resolve(returnedList)
         })
     })
+}
+
+function attachListLastFMFulldetails(ListOfTracks){
+    return new Promise((resolve, reject) => {
+        let promiseList = [];
+        let tracks = [];
+        for (let index = 0; index < ListOfTracks.length; index++) {
+            const element = ListOfTracks[index];
+            const promiseElement = getLastFMFulldetails(element.mbid, element.artist.name, element.name);
+            promiseList.push(promiseElement);
+        }
+
+        Promise.all(promiseList).then((results => {
+            for (let index = 0; index < results.length; index++) {
+                if (!results[index].error || results[index].error !== 6) {
+                    tracks.push(results[index].track);            
+                }
+            }
+
+            resolve(tracks)
+        })).catch(reject)
+        
+    })
+}
+
+function getLastFMFulldetails(mbid, artist, name){
+    return LastFmAPI.getTrackInfo(mbid, artist, name)
 }
 
 module.exports = {

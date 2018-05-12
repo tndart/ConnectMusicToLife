@@ -7,15 +7,15 @@ class Track {
     constructor(name, artist) {
         this.name = name;
         this.artist = artist;
-        this.subObjects = [];
+        this.subObjects = {};
     }
 
     addLastFmJson(LastFMJson){
-        this.subObjects.push({LastFMJson})
+        this.subObjects.LastFMJson = LastFMJson;
     }
 
     addYoutubeJson(YoutubeJson){
-        this.subObjects.push({YoutubeJson})
+        this.subObjects.YoutubeJson = YoutubeJson;
     }
 
 }

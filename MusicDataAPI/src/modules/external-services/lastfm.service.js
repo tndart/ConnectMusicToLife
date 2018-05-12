@@ -41,6 +41,23 @@ function getArtistInfo(mbid, name) {
     return null;    
 }
 
+function getTrackInfo(mbid, artistName, trackName) {
+    const method = 'track.getInfo';
+    let TRACK_REQUEST;
+
+    if (mbid) {
+        TRACK_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&mbid=${mbid}&api_key=${API_KEY}&format=json`;
+    } else if (artistName && trackName) {
+        TRACK_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&artist=${artistName}&track=${trackName}&api_key=${API_KEY}&format=json&autocorrect=1`;
+    }
+
+    if (TRACK_REQUEST){
+        return get(TRACK_REQUEST.replace(/\s/g, '%20'))
+    }
+
+    return null;
+}
+
 function get(fullUrl){
     console.info(`LastFmApi:: Sending Request ${fullUrl}`);
     
@@ -57,7 +74,7 @@ function get(fullUrl){
             res.on('end', () => {
                 var result = JSON.parse(data);
                 if(result.error === 6){
-                    console.log("error");
+                    console.log("Error: " + JSON.stringify(result));
                 }
                 resolve(result);
             });
@@ -74,4 +91,5 @@ function get(fullUrl){
 module.exports = {
     getArtistTopTracks,
     getArtistInfo,
+    getTrackInfo,
 }

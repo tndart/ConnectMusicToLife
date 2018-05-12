@@ -28,7 +28,7 @@ function sliceAndShuffleTheResult(list) {
                 const currItem = list[key]
                 const newItem = {
                     name: `${currItem.artist[0]} - ${currItem.name}`,
-                    youtubeId: currItem.subObjects[1].YoutubeJson[0].id.videoId
+                    youtubeId: currItem.subObjects.YoutubeJson[0].id.videoId
                 }
                 
                 newList.push(newItem)

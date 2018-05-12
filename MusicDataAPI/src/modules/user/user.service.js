@@ -25,9 +25,7 @@ function updatePreferences(user){
         /**/
         if (user.preferences.genres) {
             promiseGenres = UserModel.getUserModel().findByIdAndUpdate(user._id, {
-                $addToSet: { 
-                    'preferences.genres': { $each: [...user.preferences.genres] },
-                }
+                'preferences.genres': [...user.preferences.genres] 
             }, { 
                 multi: true,
                 new: true
@@ -36,9 +34,7 @@ function updatePreferences(user){
         
         if (user.preferences.artists) {
             promiseArtists = UserModel.getUserModel().findByIdAndUpdate(user._id, {
-                $addToSet: { 
-                    'preferences.artists': { $each: [...user.preferences.artists] },                   
-                }
+                'preferences.artists': [...user.preferences.artists]                    
             }, { 
                 multi: true,
                 new: true

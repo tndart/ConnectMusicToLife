@@ -11,6 +11,8 @@ const tagRouter = require('./src/routes/tag')
 const userRouter = require('./src/routes/user')
 const helpRouter = require('./src/routes/help')
 const playlistRouter = require('./src/modules/playlist/playlist.router')
+const historyRouter = require('./src/modules/history/history.router')
+
 
 const AuthMiddleware = require('./src/modules/auth/auth.middleware')
 
@@ -42,6 +44,8 @@ app.use('/tag', tagRouter)
 app.use('/user', userRouter)
 app.use('/playlist', playlistRouter)
 app.use('/help', helpRouter)
+app.use('/history', historyRouter)
+
 
 app.listen(PORT, HOST)
 console.log(`Running on http://${HOST}:${PORT}`)
