@@ -170,7 +170,9 @@ function attachYoutubeURL(name, artist, trackObj){
     return new Promise((resolve, reject) => {
         getYoutubeURL(name,artist).then(youtubeObj => {
             const trackList = youtubeObj.items;
-            console.log("youtube: " + JSON.stringify(youtubeObj))
+            if (!trackList || trackList.length === 0){
+                console.log("NOT YOUTUBE DATA: " + JSON.stringify(youtubeObj))
+            }
             trackObj.addYoutubeJson(trackList);
             resolve(trackObj)
         }).catch(reject)
