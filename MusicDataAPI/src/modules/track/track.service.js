@@ -160,7 +160,13 @@ function getYoutubeURL(name, artist) {
              data += chunk;
            });
             res.on('end', () => {
-              return resolve(JSON.parse(data));
+                let result = '';
+                try {
+                    result = JSON.parse(data)
+                } catch (error) {
+                    result = { message: "Error on getting youtube data"}
+                }
+              return resolve(result);
            });
          }).on('error', (err) => {
             reject(err);
@@ -173,10 +179,14 @@ function attachYoutubeURL(name, artist, trackObj){
         getYoutubeURL(name,artist).then(youtubeObj => {
             const trackList = youtubeObj.items;
             if (!trackList || trackList.length === 0){
-                console.log("NOT YOUTUBE DATA: " + JSON.stringify(youtubeObj))
+                const message = "NOT YOUTUBE DATA: " + JSON.stringify(youtubeObj);
+                console.log(message)
+                reject( {message} )
             }
-            trackObj.addYoutubeJson(trackList);
-            resolve(trackObj)
+            else {
+                trackObj.addYoutubeJson(trackList);
+                resolve(trackObj)
+            }
         }).catch(reject)
     })
 }
