@@ -1,14 +1,17 @@
 var mongoose = require('mongoose');
+var config = require('../modules/config/config.helper')
+
+const DEFAULT_DB_URL = config.DEFAULT_DB_BASE_URL + config.DEFAULT_DB_NAME
+const actualDbName = ( null ? (config.DEFAULT_DB_BASE_URL + arguments[0]) : DEFAULT_DB_URL )
 
 var instance = null;
-const DB_NAME = 'mongodb://127.0.0.1:3100/graduateDB';
 
 class DB {
 
     constructor() {
         if (!instance) {
             instance = this;
-            this.dbConnnection = mongoose.createConnection(DB_NAME);
+            this.dbConnnection = mongoose.createConnection(actualDbName);
             this
                 .dbConnnection
                 .on('error', console.error.bind(console, 'MongoDB connection error:'));

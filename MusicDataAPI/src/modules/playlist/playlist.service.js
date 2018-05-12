@@ -27,6 +27,7 @@ function sliceAndShuffleTheResult(list) {
                 const key = Math.floor((Math.random() * list.length))
                 const currItem = list[key]
                 const newItem = {
+                    songId: currItem.subObjects.LastFMJson.mbid,
                     name: `${currItem.artist[0]} - ${currItem.name}`,
                     youtubeId: currItem.subObjects.YoutubeJson[0].id.videoId
                 }
