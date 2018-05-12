@@ -221,7 +221,9 @@ function attachListLastFMFulldetails(ListOfTracks){
             }
 
             resolve(tracks)
-        })).catch(reject)
+        })).catch(err => {
+            console.log(`Cannot attach full details ` + JSON.stringify(err))
+        })
         
     })
 }
