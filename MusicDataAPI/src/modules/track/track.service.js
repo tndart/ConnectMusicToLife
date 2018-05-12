@@ -213,7 +213,7 @@ function attachListLastFMFulldetails(ListOfTracks){
             promiseList.push(promiseElement);
         }
 
-        Promise.all(promiseList).then((results => {
+        Promise.all(promiseList).then((results, errors) => {
             for (let index = 0; index < results.length; index++) {
                 if (!results[index].error || results[index].error !== 6) {
                     tracks.push(results[index].track);            
@@ -221,7 +221,7 @@ function attachListLastFMFulldetails(ListOfTracks){
             }
 
             resolve(tracks)
-        })).catch(err => {
+        }).catch(err => {
             console.log(`Cannot attach full details ` + JSON.stringify(err))
         })
         
