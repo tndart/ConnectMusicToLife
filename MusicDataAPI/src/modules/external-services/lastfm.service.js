@@ -76,7 +76,7 @@ function get(fullUrl){
                 if(result.error === 6){
                     console.log("Error: " + JSON.stringify(result));
                 }
-                reject(result);
+                resolve(result);
             });
     
         }).on("error", (err) => {
