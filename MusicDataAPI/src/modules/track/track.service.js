@@ -164,7 +164,7 @@ function getYoutubeURL(name, artist) {
                 try {
                     result = JSON.parse(data)
                 } catch (error) {
-                    result = { message: "Error on getting youtube data"}
+                    result = { message: "Error on getting youtube data " + data }
                 }
               return resolve(result);
            });
@@ -199,6 +199,9 @@ function getYoutubeURLList(ListOfTracks) {
         returnedList = ListOfTracks.filter(item => item && item.subObjects && item.subObjects.YoutubeJson);
         let listToGetYoutubeId = ListOfTracks.filter(item => item && ((!item.subObjects) || (!item.subObjects.YoutubeJson)) );
 
+        console.log(`TrackService::getYoutubeURLList => We have data on ${returnedList.length} 
+            and should get more ${listToGetYoutubeId} Youtube URLs`);
+        
         for (let index = 0; index < listToGetYoutubeId.length; index++) {
             if (listToGetYoutubeId[index]){
                 const name = listToGetYoutubeId[index].name;
@@ -213,7 +216,10 @@ function getYoutubeURLList(ListOfTracks) {
                 returnedList.push(element);
             }
             
+            console.log(`TrackService::getYoutubeURLList => We'll return ${returnedList.length} Tracks with Youtube URL`)
             resolve(returnedList)
+        }).catch(err => {
+            console.log("TrackService::getYoutubeURLList => " + JSON.stringify(err))
         })
     })
 }

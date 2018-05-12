@@ -52,7 +52,9 @@ router.post('/login', (req, res) => {
     if (req.body){
         if (req.body.payload && req.body.payload.auth && req.body.payload.auth.google) {
             UserService2.loginOrSignupByGoogle(req.body.payload).then(data => {
-                global.sendResponse(res, data)
+                global.sendResponse(res, data);
+            }).catch(err => {
+                global.sendResponse(res, err);
             })
         }
         

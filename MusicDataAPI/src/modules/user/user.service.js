@@ -119,7 +119,7 @@ function loginOrSignupByGoogle(user) {
                     reject(err);
                 })
             }
-        })
+        }).catch(reject)
     })
 }
 

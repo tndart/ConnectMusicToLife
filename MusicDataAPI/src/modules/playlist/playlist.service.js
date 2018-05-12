@@ -9,7 +9,7 @@ function getNext(userId, amount) {
         .then(preferences => TrackService.getTracksByPreferences(preferences, amount))
         .then(sliceAndShuffleTheResult).then(data => {
             resolve(data)
-        })
+        }).catch(reject)
     })
 }
 
