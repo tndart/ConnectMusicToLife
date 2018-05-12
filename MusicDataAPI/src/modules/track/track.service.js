@@ -61,9 +61,11 @@ function getTracksByArtists(artists, amount){
 function buildTrackListFromLastFMData(tracksFromLastFM){
     return new Promise((resolve, reject) => {
         const newList = tracksFromLastFM.map(lastFMTrack => {
-            let newTrack = new TrackModel.Track(lastFMTrack.name, lastFMTrack.artist.name)
-            newTrack.addLastFmJson(lastFMTrack);
-            return newTrack
+            if (lastFMTrack){
+                let newTrack = new TrackModel.Track(lastFMTrack.name, lastFMTrack.artist.name)
+                newTrack.addLastFmJson(lastFMTrack);
+                return newTrack
+            }
         })
 
         resolve(newList)
