@@ -62,6 +62,7 @@ function get(fullUrl){
     console.info(`LastFmApi:: Sending Request ${fullUrl}`);
     
     return new Promise((resolve, reject) => {
+        var url = fullUrl;
         http.get(fullUrl, (res) => {
             var data = '';
     
@@ -74,7 +75,7 @@ function get(fullUrl){
             res.on('end', () => {
                 var result = JSON.parse(data);
                 if(result.error === 6){
-                    console.info(`LastFmApi:: Got error for ${fullUrl}`);
+                    console.info(`LastFmApi:: Got error for ${url}`);
                     console.log("Error: " + JSON.stringify(result));
                 }
                 reject(result);
