@@ -74,9 +74,10 @@ function get(fullUrl){
             res.on('end', () => {
                 var result = JSON.parse(data);
                 if(result.error === 6){
+                    console.info(`LastFmApi:: Got error for ${fullUrl}`);
                     console.log("Error: " + JSON.stringify(result));
                 }
-                resolve(result);
+                reject(result);
             });
     
         }).on("error", (err) => {
