@@ -58,10 +58,9 @@ function getTrackInfo(mbid, artistName, trackName) {
     return null;
 }
 
-function get(fullUrl){
-    console.info(`LastFmApi:: Sending Request ${fullUrl}`);
-    
+function get(fullUrl){    
     return new Promise((resolve, reject) => {
+        console.info(`LastFmApi:: Sending Request ${fullUrl}`);
         http.get(fullUrl, (res) => {
             var data = '';
     
@@ -77,6 +76,9 @@ function get(fullUrl){
                     if(result.error === 6){
                         console.log("Error: " + JSON.stringify(result));
                     }
+                    else {
+                        console.log("LastFM => Returned " + JSON.stringify(result))
+                    }
                     resolve(result);
                 } catch (error) {
                     resolve({message: "LastFM service::get => Error occured " + JSON.stringify(error)})
@@ -84,7 +86,7 @@ function get(fullUrl){
             });
     
         }).on("error", (err) => {
-            console.log("Error: " + err.message);
+            console.log("Error: " + JSON.stringify(err));
             reject(err);
         });
     })

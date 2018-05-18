@@ -98,6 +98,42 @@ function getTracksByArtistsFromLastFM(artists) {
     })
 }
 
+function getTracksByMbidList(mbidList) {
+    return new Promise((resolve, reject) => {
+        TrackModel.Tracks.find({
+            'subObjects.LastFMJson.mbid': {
+                $in: [...mbidList]
+            }
+        }).then(data => {
+            let promises = []
+
+            if (data && (data.length > 10 || data.length === mbidList.length)) {
+                resolve(data)
+            }
+
+            for (let index = 0; index < mbidList.length; index++) {
+                const mbid = mbidList[index];
+                promises.push(getLastFMFulldetails(mbid))
+            }
+
+            Promise.all(promises).then((results) => {
+                console.log("TrackService::getTracksByMbidList => " + JSON.stringify(results))
+                const finalResult = results.filter(item => item.track).map(item => item.track)
+                buildTrackListFromLastFMData(finalResult)
+                .then(getYoutubeURLList)
+                .then(upsertList)
+                .then(resolve)
+                .catch(reject)
+            }).catch(err => {
+                reject(err)
+            })
+
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
 function getTracksByArtistsFromDB(artists) {
     const artistsId = artists.map(item => item.name);
 
@@ -181,7 +217,7 @@ function attachYoutubeURL(name, artist, trackObj){
             if (!trackList || trackList.length === 0){
                 const message = "NOT YOUTUBE DATA: " + JSON.stringify(youtubeObj);
                 console.log(message)
-                reject( {message} )
+                resolve( null, message )
             }
             else {
                 trackObj.addYoutubeJson(trackList);
@@ -213,7 +249,9 @@ function getYoutubeURLList(ListOfTracks) {
         Promise.all(promiseList).then(elements => {
             for (let index2 = 0; index2 < elements.length; index2++) {
                 const element = elements[index2];
-                returnedList.push(element);
+                if(element){
+                    returnedList.push(element);
+                }
             }
             
             console.log(`TrackService::getYoutubeURLList => We'll return ${returnedList.length} Tracks with Youtube URL`)
@@ -257,6 +295,7 @@ module.exports = {
     getYoutubeURLList,
     getTracksByPreferences,
     upsertList,
+    getTracksByMbidList,
 }
 
 
