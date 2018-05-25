@@ -5,18 +5,18 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
 
-const trackRouter = require('./src/routes/track')
-const artistRouter = require('./src/routes/artist')
-const tagRouter = require('./src/routes/tag')
-const userRouter = require('./src/routes/user')
-const helpRouter = require('./src/routes/help')
-const playlistRouter = require('./src/modules/playlist/playlist.router')
-const historyRouter = require('./src/modules/history/history.router')
+const trackRouter = require('./routes/track')
+const artistRouter = require('./routes/artist')
+const tagRouter = require('./routes/tag')
+const userRouter = require('./routes/user')
+const helpRouter = require('./routes/help')
+const playlistRouter = require('./modules/playlist/playlist.router')
+const historyRouter = require('./modules/history/history.router')
 
 
-const AuthMiddleware = require('./src/modules/auth/auth.middleware')
+const AuthMiddleware = require('./modules/auth/auth.middleware')
 
-const global = require('./src/utils/extensions')
+const global = require('./utils/extensions')
 
 // Constants
 const PORT = 8080

@@ -73,7 +73,7 @@ class LastFmApi {
 
     getArtistTopTracks(artistName, mbid, callback) {
         const method = 'artist.gettoptracks';
-        const TRACK_REQUEST = '';
+        let TRACK_REQUEST = '';
         if (mid) {
             TRACK_REQUEST = `http://ws.audioscrobbler.com/2.0/?method=${method}&artist=${artistName}&api_key=${API_KEY}&format=json&autocorrect=1`;
         } else if (artistName) {

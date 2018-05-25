@@ -13,8 +13,9 @@ class Genre {
     }
 
     addLastFmObject(jsonObject) {
+        jsonObject.lastUpdated = Date.now()
         this.subObjects = {   
-            "LastFMObject": {...jsonObject, "lastUpdated": Date.now()}
+            "LastFMObject": { jsonObject }
         }
     }
 }

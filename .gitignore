@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /MusicDataAPI/node_modules
+/MusicDataAPI/dist
 
 # testing
 /coverage
