@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  production-nginx-container:
+    container_name: 'production-connectfm-nginx'  # 'production-nginx-container'
+    image: 197609/connect-fm-nginx:latest
+    ports:
+      - "80:8888"
+      - "8080:8888"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./dist:/usr/share/nginx/html
+      - ./dh-param/dhparam-2048.pem:/etc/ssl/certs/dhparam-2048.pem
+      - /docker-volumes/etc/letsencrypt/live/connectfm.cloudns.cc/fullchain.pem:/etc/letsencrypt/live/connectfm.cloudns.cc/fullchain.pem
+      - /docker-volumes/etc/letsencrypt/live/connectfm.cloudns.cc/privkey.pem:/etc/letsencrypt/live/connectfm.cloudns.cc/privkey.pem
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    driver: bridge
