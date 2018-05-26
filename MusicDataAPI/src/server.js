@@ -19,7 +19,7 @@ const AuthMiddleware = require('./modules/auth/auth.middleware')
 const global = require('./utils/extensions')
 
 // Constants
-const PORT = 8080
+const PORT = 8001
 const HOST = '0.0.0.0'
 
 // App
