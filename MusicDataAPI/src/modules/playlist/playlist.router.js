@@ -10,7 +10,7 @@ router.get('/getNext', (req, res) => {
         res.redirect('/help')
     }
 
-    PlaylistService.getNext(req.query.userid, req.query.amount).then(playlistData => {
+    PlaylistService.getNext(req.query.userid, req.query.amount, req.query.time).then(playlistData => {
         global.sendResponse(res, playlistData);
     }).catch(err => {
         global.sendResponse(res, err);

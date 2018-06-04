@@ -2,11 +2,11 @@ const UserService = require('../user/user.service')
 const TrackService = require('../track/track.service')
 const UserPlaylistModel = require('./userPlaylist.model')
 
-function getNext(userId, amount) {
+function getNext(userId, amount, time) {
     amount = (amount ? amount : 10)
 
     return new Promise((resolve, reject) => {
-        getSmartPlaylist(userId)
+        getSmartPlaylist(userId, time)
             .then(sliceAndShuffleTheResult)
             .then(playlist => {
                 if (playlist && playlist.length >= amount) {
@@ -24,7 +24,7 @@ function getNext(userId, amount) {
     })
 }
 
-function getSmartPlaylist(userId) {
+function getSmartPlaylist(userId, time) {
     return new Promise((resolve, reject) => {
         UserPlaylistModel.UserPlaylists.find({
             userid: userId
@@ -36,7 +36,11 @@ function getSmartPlaylist(userId) {
                     return resolve([]);
                 }
 
-                const currHour = new Date().getHours();
+                let currHour = new Date().getHours();
+                if (time) {
+                    currHour = parseInt(time)
+                }
+
                 let hourList;
                 if (currHour > 6 && currHour <= 10) {
                     hourList = data[0].morningPlaylist
