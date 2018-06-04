@@ -66,7 +66,7 @@ function getSmartPlaylist(userId) {
             })
             .catch(err => {
                 console.error("Error on receiving data from UserPlaylist schema. Error is: " + JSON.stringify(err))
-                return reject(err)
+                return resolve([])
             })
     })
 }
