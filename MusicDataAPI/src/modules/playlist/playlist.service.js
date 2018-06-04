@@ -31,14 +31,37 @@ function getSmartPlaylist(userId) {
         })
             .then(data => {
                 console.log(`PlaylistService::getSmartPlaylist => Data received from UserPlaylist schema for ${userId} is: ` + JSON.stringify(data))
-                if (data && data.length > 0 && data[0] && data[0].generalPlaylist && data[0].generalPlaylist.length > 10) {
-                    TrackService.getTracksByMbidList(data[0].generalPlaylist)
+
+                if (!data || data.length === 0 || !data[0] ) {
+                    return resolve([]);
+                }
+
+                const currHour = new Date().getHours();
+                let hourList;
+                if (currHour > 6 && currHour <= 10) {
+                    hourList = data[0].morningPlaylist
+                } else if (currHour > 10 && currHour <= 18) {
+                    hourList = data[0].noonPlaylist
+                } else if (currHour > 18 && currHour <= 20) {
+                    hourList = data[0].afternoonPlaylist
+                } else if ((currHour > 21 && currHour <= 23) || (currHour > 0 && currHour <= 6)) {
+                    hourList = data[0].nightPlaylist
+                } else {
+                    hourList = data[0].generalPlaylist;
+                }
+
+                if (!hourList || hourList.length < 10) {
+                    hourList = data[0].generalPlaylist;
+                }
+
+                if (hourList && hourList.length > 10) {
+                    TrackService.getTracksByMbidList(hourList)
                         .then(tracks => {
-                            console.log(`PlaylistService::getSmartPlaylist => Data received from DB with TrackService ` + JSON.stringify(data))
+                            console.log(`PlaylistService::getSmartPlaylist => Data received from DB with TrackService ` + JSON.stringify(tracks))
                             return resolve(tracks)
                         })
                 } else {
-                    resolve([])
+                    return resolve([])
                 }
             })
             .catch(err => {

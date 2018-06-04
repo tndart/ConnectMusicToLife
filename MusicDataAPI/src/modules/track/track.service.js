@@ -1,15 +1,13 @@
 const https = require('https')
 const TrackModel = require('./track.model')
 const ArtistService = require('../artist/artist.service');
-const ObjectId = require('mongoose').Schema.Types.ObjectId
-const ObjectID = require('mongoose').mongo.ObjectID
 const LastFmAPI = require('../external-services/lastfm.service')
 
 
 function getTracksByPreferences(preferences, amount) {
     return new Promise((resolve, reject) => {
         const artists = preferences.artists
-        const genres = preferences.genres
+        //const genres = preferences.genres
 
         getTracksByArtists(artists, amount).then(tracksByArtists => {
             console.log(`Got ${tracksByArtists.length} from getTracksByArtists and if it's greater that 10 it'll returned`)
